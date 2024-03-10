@@ -8,6 +8,11 @@ pip install numpy pandas matplotlib seaborn streamlit
 ```
 
 ## Run steamlit app
+1. pindah ke folder dashboard mengunakan perintah :
+```
+cd dashboard
+```
+2. jalankan app dengan perintah :
 ```
 streamlit run dashboard.py
 ```

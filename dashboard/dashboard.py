@@ -42,6 +42,40 @@ def create_weather_rent_df(df):
     })
     return weather_rent_df
 
+# Menyiapkan monthly_rent_df
+def create_monthly_rent_df(df):
+    monthly_rent_df = df.groupby(by='month').agg({
+        'count': 'sum'
+    })
+    ordered_months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ]
+    monthly_rent_df = monthly_rent_df.reindex(ordered_months, fill_value=0)
+    return monthly_rent_df
+
+# Menyiapkan weekday_rent_df
+def create_weekday_rent_df(df):
+    weekday_rent_df = df.groupby(by='weekday').agg({
+        'count': 'sum'
+    }).reset_index()
+    return weekday_rent_df
+
+# Menyiapkan workingday_rent_df
+def create_workingday_rent_df(df):
+    workingday_rent_df = df.groupby(by='workingday').agg({
+        'count': 'sum'
+    }).reset_index()
+    return workingday_rent_df
+
+# Menyiapkan holiday_rent_df
+def create_holiday_rent_df(df):
+    holiday_rent_df = df.groupby(by='holiday').agg({
+        'count': 'sum'
+    }).reset_index()
+    return holiday_rent_df
+    
+
 bike_day = pd.read_csv('cleaned_data_day.csv')
 
 # Membuat komponen filter
@@ -68,6 +102,10 @@ daily_rent_df = create_daily_rent_df(main_df)
 daily_casual_rent_df = create_daily_casual_rent_df(main_df)
 daily_registered_rent_df = create_daily_registered_rent_df(main_df)
 season_rent_df = create_season_rent_df(main_df)
+monthly_rent_df = create_monthly_rent_df(main_df)
+weekday_rent_df = create_weekday_rent_df(main_df)
+workingday_rent_df = create_workingday_rent_df(main_df)
+holiday_rent_df = create_holiday_rent_df(main_df)
 weather_rent_df = create_weather_rent_df(main_df)
 
 # Membuat Dashboard secara lengkap
@@ -146,6 +184,66 @@ ax.set_xlabel(None)
 ax.set_ylabel(None)
 ax.tick_params(axis='x', labelsize=20)
 ax.tick_params(axis='y', labelsize=15)
+st.pyplot(fig)
+
+# Membuat jumlah penyewaan berdasarkan weekday, working dan holiday
+st.subheader('Penyewaan berdasarkan hari, hari kerja dan hari libur')
+
+fig, axes = plt.subplots(nrows=3, ncols=1, figsize=(15,10))
+
+colors1=["tab:blue", "tab:orange"]
+colors2=["tab:blue", "tab:orange"]
+colors3=["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple", "tab:brown", "tab:pink"]
+
+# Berdasarkan workingday
+sns.barplot(
+    x='workingday',
+    y='count',
+    data=workingday_rent_df,
+    palette=colors1,
+    ax=axes[0])
+
+for index, row in enumerate(workingday_rent_df['count']):
+    axes[0].text(index, row + 1, str(row), ha='center', va='bottom', fontsize=12)
+
+axes[0].set_title('Jumlah sewa berdasarkan hari kerja')
+axes[0].set_ylabel(None)
+axes[0].tick_params(axis='x', labelsize=15)
+axes[0].tick_params(axis='y', labelsize=10)
+
+# Berdasarkan holiday
+sns.barplot(
+  x='holiday',
+  y='count',
+  data=holiday_rent_df,
+  palette=colors2,
+  ax=axes[1])
+
+for index, row in enumerate(holiday_rent_df['count']):
+    axes[1].text(index, row + 1, str(row), ha='center', va='bottom', fontsize=12)
+
+axes[1].set_title('jumlah sewa berdasarkan hari libur')
+axes[1].set_ylabel(None)
+axes[1].tick_params(axis='x', labelsize=15)
+axes[1].tick_params(axis='y', labelsize=10)
+
+# Berdasarkan weekday
+sns.barplot(
+  x='weekday',
+  y='count',
+  data=weekday_rent_df,
+  palette=colors3,
+  ax=axes[2])
+
+for index, row in enumerate(weekday_rent_df['count']):
+    axes[2].text(index, row + 1, str(row), ha='center', va='bottom', fontsize=12)
+
+axes[2].set_title('jumlah sewa berdasarkan hari dalam seminggu')
+axes[2].set_ylabel(None)
+axes[2].tick_params(axis='x', labelsize=15)
+axes[2].tick_params(axis='y', labelsize=10)
+
+plt.tight_layout()
 st.pyplot(fig)
 
 st.caption('Copyright (c) Aulia Muzhaffar 2024')
