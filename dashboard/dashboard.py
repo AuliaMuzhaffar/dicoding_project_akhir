@@ -42,7 +42,7 @@ def create_weather_rent_df(df):
     })
     return weather_rent_df
 
-bike_day = pd.read_csv('cleaned_data_day.csv')
+bike_day = pd.read_csv('dashboard\cleaned_data_day.csv')
 
 # Membuat komponen filter
 min_date = pd.to_datetime(bike_day['dateday']).dt.date.min()
